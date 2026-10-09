@@ -83,6 +83,9 @@ public class VehicleService : IVehicleService
         if (vehicle is null)
             return ServiceResult.Fail("Araç bulunamadı.");
 
+        if (await _vehicleRepository.HasFinesAsync(id))
+            return ServiceResult.Fail("Bu araca ait ceza kayıtları olduğu için araç silinemez.");
+
         _vehicleRepository.Remove(vehicle);
         await _vehicleRepository.SaveChangesAsync();
         return ServiceResult.Ok();

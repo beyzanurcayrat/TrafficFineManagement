@@ -5,6 +5,7 @@ using TrafficFineManagement.Business.Services.Interfaces;
 using TrafficFineManagement.DataAccess.Context;
 using TrafficFineManagement.DataAccess.Repositories;
 using TrafficFineManagement.DataAccess.Repositories.Interfaces;
+using TrafficFineManagement.DataAccess.Seed;
 using TrafficFineManagement.Entities.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +28,12 @@ builder.Services.AddScoped<IVehicleService, VehicleService>();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+
+// Geliştirme ortamında migration + test verisi
+if (app.Environment.IsDevelopment())
+{
+    await DbSeeder.SeedAsync(app.Services);
+}
 
 if (app.Environment.IsDevelopment())
 {

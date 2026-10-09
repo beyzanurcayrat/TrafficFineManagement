@@ -16,4 +16,7 @@ public class VehicleRepository : Repository<Vehicle>, IVehicleRepository
 
     public Task<bool> PlateExistsAsync(string plate, int? excludeId = null) =>
         DbSet.AnyAsync(v => v.Plate == plate && (excludeId == null || v.Id != excludeId));
+
+    public Task<bool> HasFinesAsync(int vehicleId) =>
+        Context.TrafficFines.AnyAsync(f => f.VehicleId == vehicleId);
 }
