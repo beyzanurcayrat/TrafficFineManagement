@@ -7,6 +7,7 @@ using TrafficFineManagement.Business.Dtos.Fines;
 using TrafficFineManagement.Business.Services.Interfaces;
 using TrafficFineManagement.Entities.Constants;
 using TrafficFineManagement.Entities.Enums;
+using TrafficFineManagement.Web.Extensions;
 
 namespace TrafficFineManagement.Web.Controllers;
 
@@ -168,7 +169,8 @@ public class FinesController : Controller
     {
         var vehicles = await _vehicleService.GetAllAsync();
         ViewData["Vehicles"] = vehicles
-            .Select(v => new SelectListItem($"{v.Plate} - {v.Brand} {v.Model}", v.Id.ToString()))
+            .Select(v => new SelectListItem($"{v.Plate.FormatPlate()} - {v.Brand} {v.Model}", v.Id.ToString()))
             .ToList();
+        
     }
 }

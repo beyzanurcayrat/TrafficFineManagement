@@ -37,14 +37,14 @@ else
         @foreach (var vehicle in Model)
         {
             <tr>
-                <td>@vehicle.Plate</td>
+                <td>@vehicle.Plate.FormatPlate()</td>
                 <td>@vehicle.VehicleType.GetDisplayName()</td>
                 <td>@vehicle.Brand</td>
                 <td>@vehicle.Model</td>
                 <td class="text-end">
                     <a asp-action="Edit" asp-route-id="@vehicle.Id" class="btn btn-sm btn-outline-primary">Düzenle</a>
                     <form asp-action="Delete" asp-route-id="@vehicle.Id" method="post" class="d-inline"
-                          onsubmit="return confirm('@vehicle.Plate plakalı aracı silmek istediğinize emin misiniz?');">
+                          onsubmit="return confirm('@vehicle.Plate.FormatPlate() plakalı aracı silmek istediğinize emin misiniz?');">
                         <button type="submit" class="btn btn-sm btn-outline-danger">Sil</button>
                     </form>
                 </td>

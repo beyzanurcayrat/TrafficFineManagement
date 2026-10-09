@@ -57,7 +57,7 @@ else
             {
                 <tr>
                     <td>@fine.FineNumber</td>
-                    <td>@fine.Plate</td>
+                    <td>@fine.Plate.FormatPlate()</td>
                     <td>@fine.ViolationType</td>
                     <td>@fine.ViolationDate.ToTrDateTime()</td>
                     <td class="text-end">@fine.Amount.ToMoney()</td>

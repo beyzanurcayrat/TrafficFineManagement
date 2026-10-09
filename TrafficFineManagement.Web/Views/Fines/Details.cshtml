@@ -29,7 +29,7 @@
             <div class="card-body">
                 <dl class="row mb-0">
                     <dt class="col-sm-4">Plaka</dt>
-                    <dd class="col-sm-8">@Model.Plate <span class="text-muted">(@Model.VehicleInfo)</span></dd>
+                    <dd class="col-sm-8">@Model.Plate.FormatPlate() <span class="text-muted">(@Model.VehicleInfo)</span></dd>
 
                     <dt class="col-sm-4">İhlal Türü</dt>
                     <dd class="col-sm-8">@Model.ViolationType</dd>
