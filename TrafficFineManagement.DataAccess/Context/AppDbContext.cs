@@ -9,6 +9,9 @@ public class AppDbContext : IdentityDbContext<AppUser>
 {
     public DbSet<Vehicle> Vehicles => Set<Vehicle>();
 
+    public DbSet<TrafficFine> TrafficFines => Set<TrafficFine>();
+    public DbSet<FineApprovalHistory> FineApprovalHistories => Set<FineApprovalHistory>();
+    
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
     }

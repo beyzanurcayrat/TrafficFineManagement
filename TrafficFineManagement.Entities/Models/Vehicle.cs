@@ -3,8 +3,10 @@ using TrafficFineManagement.Entities.Enums;
 
 namespace TrafficFineManagement.Entities.Models;
 
+
 public class Vehicle : BaseEntity
 {
+    public ICollection<TrafficFine> TrafficFines { get; set; } = new List<TrafficFine>();
     public string Plate { get; set; } = string.Empty;
     public VehicleType VehicleType { get; set; }
     public string Brand { get; set; } = string.Empty;
