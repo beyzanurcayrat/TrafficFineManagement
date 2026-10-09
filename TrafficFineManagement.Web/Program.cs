@@ -10,6 +10,12 @@ using TrafficFineManagement.Entities.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Katman servisleri
+builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
+builder.Services.AddScoped<ITrafficFineRepository, TrafficFineRepository>();
+builder.Services.AddScoped<IVehicleService, VehicleService>();
+builder.Services.AddScoped<ITrafficFineService, TrafficFineService>();
+
 // Veritabanı
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
                        ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
