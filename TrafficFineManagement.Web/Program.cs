@@ -16,13 +16,6 @@ CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Katman servisleri
-builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
-builder.Services.AddScoped<ITrafficFineRepository, TrafficFineRepository>();
-builder.Services.AddScoped<IVehicleService, VehicleService>();
-builder.Services.AddScoped<ITrafficFineService, TrafficFineService>();
-builder.Services.AddScoped<IUserService, UserService>();
-
 // Veritabanı
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -34,9 +27,15 @@ builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireCo
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>();
 
-// API isteklerinde giriş sayfasına yönlendirme yerine 401/403 dön
+// Pasifleştirilen kullanıcının açık oturumu en geç 1 dakika içinde sonlansın (varsayılan 30 dk)
+builder.Services.Configure<SecurityStampValidatorOptions>(options =>
+    options.ValidationInterval = TimeSpan.FromMinutes(1));
+
 builder.Services.ConfigureApplicationCookie(options =>
 {
+    options.AccessDeniedPath = "/Home/HttpStatus/403";
+
+    // API isteklerinde giriş sayfasına yönlendirme yerine 401/403 dön
     options.Events.OnRedirectToLogin = context =>
     {
         if (context.Request.Path.StartsWithSegments("/api"))
@@ -60,6 +59,7 @@ builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
 builder.Services.AddScoped<ITrafficFineRepository, TrafficFineRepository>();
 builder.Services.AddScoped<IVehicleService, VehicleService>();
 builder.Services.AddScoped<ITrafficFineService, TrafficFineService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 // MVC + API (enum'lar JSON'da sayı yerine isim olarak)
 builder.Services.AddControllersWithViews()
@@ -86,6 +86,11 @@ else
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
+
+// 404 gibi durum kodlarında kullanıcı dostu sayfa (API istekleri bu sayfayı almasın)
+app.UseWhen(
+    context => !context.Request.Path.StartsWithSegments("/api"),
+    branch => branch.UseStatusCodePagesWithReExecute("/Home/HttpStatus/{0}"));
 
 // Kullanıcılar sistem yöneticisi tarafından tanımlanır; herkese açık kayıt kapalı
 app.Use(async (context, next) =>
