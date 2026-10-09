@@ -1,26 +1,25 @@
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TrafficFineManagement.Business.Services.Interfaces;
 using TrafficFineManagement.Web.Models;
 
 namespace TrafficFineManagement.Web.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
+    private readonly ITrafficFineService _fineService;
 
-    public HomeController(ILogger<HomeController> logger)
+    public HomeController(ITrafficFineService fineService)
     {
-        _logger = logger;
+        _fineService = fineService;
     }
 
-    public IActionResult Index()
+    [Authorize]
+    public async Task<IActionResult> Index()
     {
-        return View();
-    }
-
-    public IActionResult Privacy()
-    {
-        return View();
+        var summary = await _fineService.GetStatusSummaryAsync();
+        return View(summary);
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

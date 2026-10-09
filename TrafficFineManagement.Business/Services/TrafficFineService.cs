@@ -24,6 +24,15 @@ public class TrafficFineService : ITrafficFineService
 
     // ---------- Okuma ----------
 
+    public async Task<Dictionary<FineStatus, int>> GetStatusSummaryAsync()
+    {
+        var counts = await _fineRepository.GetStatusCountsAsync();
+
+        // Hiç kaydı olmayan durumlar da 0 ile görünsün
+        return Enum.GetValues<FineStatus>()
+            .ToDictionary(status => status, status => counts.GetValueOrDefault(status));
+    }
+
     public async Task<List<FineListItemDto>> GetListAsync(FineStatus? status, string? plate)
     {
         var normalizedPlate = string.IsNullOrWhiteSpace(plate)
@@ -85,7 +94,8 @@ public class TrafficFineService : ITrafficFineService
         };
     }
 
-    // ---------- Oluşturma / Güncelleme ----------
+    // ---------- Oluşturma / Güncelleme
+        // ---------- Oluşturma / Güncelleme ----------
 
     public async Task<ServiceResult<int>> CreateAsync(FineFormDto dto, CurrentUser user)
     {

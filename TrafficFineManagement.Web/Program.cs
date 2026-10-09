@@ -80,6 +80,17 @@ else
     app.UseHsts();
 }
 
+// Kullanıcılar sistem yöneticisi tarafından tanımlanır; herkese açık kayıt kapalı
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path.StartsWithSegments("/Identity/Account/Register"))
+    {
+        context.Response.Redirect("/Identity/Account/Login");
+        return;
+    }
+    await next();
+});
+
 app.UseHttpsRedirection();
 app.UseRouting();
 

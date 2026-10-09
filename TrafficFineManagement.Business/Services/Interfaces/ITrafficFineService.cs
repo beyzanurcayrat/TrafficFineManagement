@@ -6,6 +6,7 @@ namespace TrafficFineManagement.Business.Services.Interfaces;
 
 public interface ITrafficFineService
 {
+    Task<Dictionary<FineStatus, int>> GetStatusSummaryAsync();
     Task<List<FineListItemDto>> GetListAsync(FineStatus? status, string? plate);
     Task<FineDetailDto?> GetDetailAsync(int id, CurrentUser user);
     Task<FineFormDto?> GetForEditAsync(int id);

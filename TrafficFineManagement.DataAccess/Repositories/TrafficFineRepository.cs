@@ -36,4 +36,10 @@ public class TrafficFineRepository : Repository<TrafficFine>, ITrafficFineReposi
 
     public Task<bool> FineNumberExistsAsync(string fineNumber, int? excludeId = null) =>
         DbSet.AnyAsync(f => f.FineNumber == fineNumber && (excludeId == null || f.Id != excludeId));
+
+    // Sayım veritabanında yapılır (GROUP BY); kayıtlar belleğe çekilmez
+    public Task<Dictionary<FineStatus, int>> GetStatusCountsAsync() =>
+        DbSet.GroupBy(f => f.Status)
+            .Select(g => new { Status = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.Status, x => x.Count);
 }
