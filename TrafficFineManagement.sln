@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrafficFineManagement.DataA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrafficFineManagement.Business", "TrafficFineManagement.Business\TrafficFineManagement.Business.csproj", "{7AB3FBCE-BDB8-4D94-91EF-879C016770D8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrafficFineManagement.Tests", "TrafficFineManagement.Tests\TrafficFineManagement.Tests.csproj", "{B85961A8-BBC6-4DF7-8C88-086B918B43DA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,18 @@ Global
 		{7AB3FBCE-BDB8-4D94-91EF-879C016770D8}.Release|x64.Build.0 = Release|Any CPU
 		{7AB3FBCE-BDB8-4D94-91EF-879C016770D8}.Release|x86.ActiveCfg = Release|Any CPU
 		{7AB3FBCE-BDB8-4D94-91EF-879C016770D8}.Release|x86.Build.0 = Release|Any CPU
+		{B85961A8-BBC6-4DF7-8C88-086B918B43DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B85961A8-BBC6-4DF7-8C88-086B918B43DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B85961A8-BBC6-4DF7-8C88-086B918B43DA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B85961A8-BBC6-4DF7-8C88-086B918B43DA}.Debug|x64.Build.0 = Debug|Any CPU
+		{B85961A8-BBC6-4DF7-8C88-086B918B43DA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B85961A8-BBC6-4DF7-8C88-086B918B43DA}.Debug|x86.Build.0 = Debug|Any CPU
+		{B85961A8-BBC6-4DF7-8C88-086B918B43DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B85961A8-BBC6-4DF7-8C88-086B918B43DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B85961A8-BBC6-4DF7-8C88-086B918B43DA}.Release|x64.ActiveCfg = Release|Any CPU
+		{B85961A8-BBC6-4DF7-8C88-086B918B43DA}.Release|x64.Build.0 = Release|Any CPU
+		{B85961A8-BBC6-4DF7-8C88-086B918B43DA}.Release|x86.ActiveCfg = Release|Any CPU
+		{B85961A8-BBC6-4DF7-8C88-086B918B43DA}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
