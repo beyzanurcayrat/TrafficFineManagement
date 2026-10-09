@@ -1,6 +1,7 @@
 @model List<UserListItemDto>
 @{
     ViewData["Title"] = "Kullanıcılar";
+    var currentUserId = ViewData["CurrentUserId"] as string;
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -12,20 +13,57 @@
 
 <table class="table table-striped align-middle">
     <thead>
-    <tr>
-        <th>Ad Soyad</th>
-        <th>E-posta</th>
-        <th>Rol</th>
-    </tr>
+        <tr>
+            <th>Ad Soyad</th>
+            <th>E-posta</th>
+            <th>Rol</th>
+            <th>Durum</th>
+            <th></th>
+        </tr>
     </thead>
     <tbody>
-    @foreach (var user in Model)
-    {
-        <tr>
-            <td>@user.FullName</td>
-            <td>@user.Email</td>
-            <td>@string.Join(", ", user.Roles.Select(r => AppRoles.DisplayNames.GetValueOrDefault(r, r)))</td>
-        </tr>
-    }
+        @foreach (var user in Model)
+        {
+            <tr class="@(user.IsActive ? "" : "text-muted")">
+                <td>@user.FullName</td>
+                <td>@user.Email</td>
+                <td>@string.Join(", ", user.Roles.Select(r => AppRoles.DisplayNames.GetValueOrDefault(r, r)))</td>
+                <td>
+                    @if (user.IsActive)
+                    {
+                        <span class="badge bg-success">Aktif</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Pasif</span>
+                    }
+                </td>
+                <td class="text-end">
+                    @if (user.Id == currentUserId)
+                    {
+                        <span class="small text-muted">Siz</span>
+                    }
+                    else
+                    {
+                        @if (user.IsActive)
+                        {
+                            <form asp-action="Deactivate" asp-route-id="@user.Id" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-outline-warning">Pasifleştir</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-action="Activate" asp-route-id="@user.Id" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-outline-success">Aktifleştir</button>
+                            </form>
+                        }
+                        <form asp-action="Delete" asp-route-id="@user.Id" method="post" class="d-inline"
+                              onsubmit="return confirm('@user.FullName kullanıcısını silmek istediğinize emin misiniz?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Sil</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

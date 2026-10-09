@@ -42,4 +42,9 @@ public class TrafficFineRepository : Repository<TrafficFine>, ITrafficFineReposi
         DbSet.GroupBy(f => f.Status)
             .Select(g => new { Status = g.Key, Count = g.Count() })
             .ToDictionaryAsync(x => x.Status, x => x.Count);
+
+    // Kullanıcı bir ceza oluşturmuş veya onay geçmişinde yer alıyor mu?
+    public async Task<bool> IsUserReferencedAsync(string userId) =>
+        await DbSet.AnyAsync(f => f.CreatedByUserId == userId)
+        || await Context.FineApprovalHistories.AnyAsync(h => h.UserId == userId);
 }

@@ -62,7 +62,7 @@ public class LoginModel : PageModel
         }
 
         ModelState.AddModelError(string.Empty, result.IsLockedOut
-            ? "Çok fazla hatalı deneme yapıldı. Hesabınız geçici olarak kilitlendi."
+            ? "Hesabınız kilitli veya pasif durumda. Lütfen sistem yöneticisiyle iletişime geçin."
             : "E-posta veya şifre hatalı.");
 
         return Page();
