@@ -1,6 +1,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using TrafficFineManagement.Business.Services;
+using TrafficFineManagement.Business.Services.Interfaces;
 using TrafficFineManagement.DataAccess.Context;
+using TrafficFineManagement.DataAccess.Repositories;
+using TrafficFineManagement.DataAccess.Repositories.Interfaces;
 using TrafficFineManagement.Entities.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +19,10 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>();
+
+// Katman servisleri
+builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
+builder.Services.AddScoped<IVehicleService, VehicleService>();
 
 builder.Services.AddControllersWithViews();
 
