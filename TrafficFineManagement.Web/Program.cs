@@ -1,3 +1,5 @@
+using System.Globalization;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TrafficFineManagement.Business.Services;
@@ -7,20 +9,16 @@ using TrafficFineManagement.DataAccess.Repositories;
 using TrafficFineManagement.DataAccess.Repositories.Interfaces;
 using TrafficFineManagement.DataAccess.Seed;
 using TrafficFineManagement.Entities.Identity;
-using System.Globalization;
+
+// Form verileri (ondalık sayı, tarih) kültürden bağımsız okunsun; ekranda Türkçe formatlıyoruz
+CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
-// Katman servisleri
-builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
-builder.Services.AddScoped<ITrafficFineRepository, TrafficFineRepository>();
-builder.Services.AddScoped<IVehicleService, VehicleService>();
-builder.Services.AddScoped<ITrafficFineService, TrafficFineService>();
-
 // Veritabanı
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-                       ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -29,27 +27,52 @@ builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireCo
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>();
 
+// API isteklerinde giriş sayfasına yönlendirme yerine 401/403 dön
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Events.OnRedirectToLogin = context =>
+    {
+        if (context.Request.Path.StartsWithSegments("/api"))
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        else
+            context.Response.Redirect(context.RedirectUri);
+        return Task.CompletedTask;
+    };
+    options.Events.OnRedirectToAccessDenied = context =>
+    {
+        if (context.Request.Path.StartsWithSegments("/api"))
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+        else
+            context.Response.Redirect(context.RedirectUri);
+        return Task.CompletedTask;
+    };
+});
+
 // Katman servisleri
 builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
+builder.Services.AddScoped<ITrafficFineRepository, TrafficFineRepository>();
 builder.Services.AddScoped<IVehicleService, VehicleService>();
+builder.Services.AddScoped<ITrafficFineService, TrafficFineService>();
 
-// Form verileri (ondalık sayı, tarih) kültürden bağımsız okunsun; ekranda Türkçe formatlıyoruz
-CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
-CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
+// MVC + API (enum'lar JSON'da sayı yerine isim olarak)
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
-builder.Services.AddControllersWithViews();
+// Swagger
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+    options.SwaggerDoc("v1", new() { Title = "Trafik Cezası Yönetim API", Version = "v1" }));
 
 var app = builder.Build();
 
-// Geliştirme ortamında migration + test verisi
 if (app.Environment.IsDevelopment())
 {
+    // Migration + test verisi
     await DbSeeder.SeedAsync(app.Services);
-}
 
-if (app.Environment.IsDevelopment())
-{
     app.UseMigrationsEndPoint();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 else
 {
