@@ -1,0 +1,16 @@
+@model FineFormDto
+@{
+    ViewData["Title"] = "Ceza Düzenle";
+}
+
+<h2>Ceza Düzenle</h2>
+
+<form asp-action="Edit" asp-route-id="@ViewData["FineId"]" method="post">
+    <partial name="_FineForm" model="Model" />
+    <button type="submit" class="btn btn-primary">Güncelle</button>
+    <a asp-action="Details" asp-route-id="@ViewData["FineId"]" class="btn btn-outline-secondary">Vazgeç</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

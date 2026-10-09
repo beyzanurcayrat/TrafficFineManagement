@@ -7,8 +7,10 @@ using TrafficFineManagement.DataAccess.Repositories;
 using TrafficFineManagement.DataAccess.Repositories.Interfaces;
 using TrafficFineManagement.DataAccess.Seed;
 using TrafficFineManagement.Entities.Identity;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 // Katman servisleri
 builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
@@ -30,6 +32,10 @@ builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireCo
 // Katman servisleri
 builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
 builder.Services.AddScoped<IVehicleService, VehicleService>();
+
+// Form verileri (ondalık sayı, tarih) kültürden bağımsız okunsun; ekranda Türkçe formatlıyoruz
+CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
 
 builder.Services.AddControllersWithViews();
 

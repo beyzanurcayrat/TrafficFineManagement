@@ -1,0 +1,72 @@
+@model List<FineListItemDto>
+@{
+    ViewData["Title"] = "Trafik Cezaları";
+    var selectedStatus = ViewData["Status"] as FineStatus?;
+    var plate = ViewData["Plate"] as string;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Trafik Cezaları</h2>
+    @if (User.IsInRole(AppRoles.Personnel))
+    {
+        <a asp-action="Create" class="btn btn-primary">+ Yeni Ceza</a>
+    }
+</div>
+
+<partial name="_Alerts" />
+
+<form asp-action="Index" method="get" class="row g-2 mb-3">
+    <div class="col-md-4">
+        <select name="status" class="form-select">
+            <option value="">Tüm durumlar</option>
+            @foreach (var s in Enum.GetValues<FineStatus>())
+            {
+                <option value="@s" selected="@(s == selectedStatus)">@s.GetDisplayName()</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-4">
+        <input name="plate" value="@plate" class="form-control" placeholder="Plaka ara..." />
+    </div>
+    <div class="col-md-4">
+        <button type="submit" class="btn btn-outline-primary">Filtrele</button>
+        <a asp-action="Index" class="btn btn-link">Temizle</a>
+    </div>
+</form>
+
+@if (!Model.Any())
+{
+    <p class="text-muted">Kayıt bulunamadı.</p>
+}
+else
+{
+    <table class="table table-hover align-middle">
+        <thead>
+            <tr>
+                <th>Tutanak No</th>
+                <th>Plaka</th>
+                <th>İhlal Türü</th>
+                <th>İhlal Tarihi</th>
+                <th class="text-end">Tutar</th>
+                <th>Durum</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var fine in Model)
+            {
+                <tr>
+                    <td>@fine.FineNumber</td>
+                    <td>@fine.Plate</td>
+                    <td>@fine.ViolationType</td>
+                    <td>@fine.ViolationDate.ToTrDateTime()</td>
+                    <td class="text-end">@fine.Amount.ToMoney()</td>
+                    <td><span class="badge @fine.Status.GetBadgeClass()">@fine.Status.GetDisplayName()</span></td>
+                    <td class="text-end">
+                        <a asp-action="Details" asp-route-id="@fine.Id" class="btn btn-sm btn-outline-primary">Detay</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

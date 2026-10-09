@@ -23,6 +23,17 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Fines" asp-action="Index">Cezalar</a>
+                        </li>
+                        @if (User.IsInRole(AppRoles.Manager) || User.IsInRole(AppRoles.Finance))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark fw-semibold" asp-controller="Fines" asp-action="Pending">Onayımı Bekleyenler</a>
+                            </li>
+                        }
+                        
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Vehicles" asp-action="Index">Araçlar</a>
                         </li>

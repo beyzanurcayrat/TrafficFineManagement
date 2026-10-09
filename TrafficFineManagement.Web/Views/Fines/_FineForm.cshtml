@@ -1,0 +1,60 @@
+@model FineFormDto
+@{
+    var vehicleOptions = ViewData["Vehicles"] as IEnumerable<SelectListItem> ?? Enumerable.Empty<SelectListItem>();
+}
+
+<div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label asp-for="VehicleId" class="form-label"></label>
+        <select asp-for="VehicleId" asp-items="vehicleOptions" class="form-select">
+            <option value="">Seçiniz...</option>
+        </select>
+        <span asp-validation-for="VehicleId" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <label asp-for="FineNumber" class="form-label"></label>
+        <input asp-for="FineNumber" class="form-control" placeholder="Örn. TC-2026-000123" />
+        <span asp-validation-for="FineNumber" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <label asp-for="ViolationDate" class="form-label"></label>
+        <input asp-for="ViolationDate" type="datetime-local" class="form-control" />
+        <span asp-validation-for="ViolationDate" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <label asp-for="ViolationType" class="form-label"></label>
+        <input asp-for="ViolationType" class="form-control" list="violationTypes" />
+        <datalist id="violationTypes">
+            <option value="Hız sınırı aşımı"></option>
+            <option value="Kırmızı ışık ihlali"></option>
+            <option value="Hatalı park"></option>
+            <option value="Emniyet kemeri takmamak"></option>
+            <option value="Seyir halinde telefon kullanımı"></option>
+            <option value="Takip mesafesi ihlali"></option>
+        </datalist>
+        <span asp-validation-for="ViolationType" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <label asp-for="Location" class="form-label"></label>
+        <input asp-for="Location" class="form-control" />
+        <span asp-validation-for="Location" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <label asp-for="Amount" class="form-label"></label>
+        <input asp-for="Amount" type="number" step="0.01" min="0.01" class="form-control" />
+        <span asp-validation-for="Amount" class="text-danger"></span>
+    </div>
+
+    <div class="col-12 mb-3">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" rows="3" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+</div>
