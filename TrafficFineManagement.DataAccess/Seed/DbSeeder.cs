@@ -23,7 +23,7 @@ public static class DbSeeder
         // Bekleyen migration'ları uygula (veritabanı yoksa oluşturur)
         await context.Database.MigrateAsync();
 
-        foreach (var role in new[] { AppRoles.Personnel, AppRoles.Manager, AppRoles.Finance })
+        foreach (var role in AppRoles.DisplayNames.Keys)
         {
             if (!await roleManager.RoleExistsAsync(role))
                 await roleManager.CreateAsync(new IdentityRole(role));
@@ -32,6 +32,7 @@ public static class DbSeeder
         await EnsureUserAsync(userManager, "personel@test.com", "Ayşe Personel", AppRoles.Personnel);
         await EnsureUserAsync(userManager, "yonetici@test.com", "Mehmet Yönetici", AppRoles.Manager);
         await EnsureUserAsync(userManager, "finans@test.com", "Zeynep Finans", AppRoles.Finance);
+        await EnsureUserAsync(userManager, "admin@test.com", "Sistem Yöneticisi", AppRoles.Admin);
 
         if (!await context.Vehicles.AnyAsync())
         {

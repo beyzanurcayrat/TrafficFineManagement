@@ -1,13 +1,7 @@
 ﻿@model Dictionary<FineStatus, int>
 @{
     ViewData["Title"] = "Ana Sayfa";
-    var roleNames = new Dictionary<string, string>
-    {
-        [AppRoles.Personnel] = "Personel",
-        [AppRoles.Manager] = "Yönetici",
-        [AppRoles.Finance] = "Finans"
-    };
-    var myRoles = roleNames.Where(r => User.IsInRole(r.Key)).Select(r => r.Value);
+    var myRoles = AppRoles.DisplayNames.Where(r => User.IsInRole(r.Key)).Select(r => r.Value);
 }
 
 <h2 class="mb-1">Trafik Cezası Yönetimi</h2>
@@ -37,6 +31,10 @@
     @if (User.IsInRole(AppRoles.Manager) || User.IsInRole(AppRoles.Finance))
     {
         <a asp-controller="Fines" asp-action="Pending" class="btn btn-warning">Onayımı Bekleyenler</a>
+    }
+    @if (User.IsInRole(AppRoles.Admin))
+    {
+        <a asp-controller="Users" asp-action="Index" class="btn btn-outline-primary">Kullanıcı Yönetimi</a>
     }
     <a asp-controller="Fines" asp-action="Index" class="btn btn-outline-secondary">Tüm Cezalar</a>
 </div>

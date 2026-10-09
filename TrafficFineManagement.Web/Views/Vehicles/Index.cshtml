@@ -1,21 +1,18 @@
 @model List<VehicleListItemDto>
 @{
     ViewData["Title"] = "Araçlar";
+    var canManageVehicles = User.IsInRole(AppRoles.Personnel) || User.IsInRole(AppRoles.Manager);
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2>Araçlar</h2>
-    <a asp-action="Create" class="btn btn-primary">+ Yeni Araç</a>
+    @if (canManageVehicles)
+    {
+        <a asp-action="Create" class="btn btn-primary">+ Yeni Araç</a>
+    }
 </div>
 
-@if (TempData["Success"] is string success)
-{
-    <div class="alert alert-success">@success</div>
-}
-@if (TempData["Error"] is string error)
-{
-    <div class="alert alert-danger">@error</div>
-}
+<partial name="_Alerts" />
 
 @if (!Model.Any())
 {
@@ -42,11 +39,14 @@ else
                 <td>@vehicle.Brand</td>
                 <td>@vehicle.Model</td>
                 <td class="text-end">
-                    <a asp-action="Edit" asp-route-id="@vehicle.Id" class="btn btn-sm btn-outline-primary">Düzenle</a>
-                    <form asp-action="Delete" asp-route-id="@vehicle.Id" method="post" class="d-inline"
-                          onsubmit="return confirm('@vehicle.Plate.FormatPlate() plakalı aracı silmek istediğinize emin misiniz?');">
-                        <button type="submit" class="btn btn-sm btn-outline-danger">Sil</button>
-                    </form>
+                    @if (canManageVehicles)
+                    {
+                        <a asp-action="Edit" asp-route-id="@vehicle.Id" class="btn btn-sm btn-outline-primary">Düzenle</a>
+                        <form asp-action="Delete" asp-route-id="@vehicle.Id" method="post" class="d-inline"
+                              onsubmit="return confirm('@vehicle.Plate.FormatPlate() plakalı aracı silmek istediğinize emin misiniz?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Sil</button>
+                        </form>
+                    }
                 </td>
             </tr>
         }

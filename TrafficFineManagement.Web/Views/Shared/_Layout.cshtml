@@ -20,19 +20,28 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Ana Sayfa</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Fines" asp-action="Index">Cezalar</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Vehicles" asp-action="Index">Araçlar</a>
-                        </li>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Ana Sayfa</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Fines" asp-action="Index">Cezalar</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Vehicles" asp-action="Index">Araçlar</a>
+                            </li>
+                        }
                         @if (User.IsInRole(AppRoles.Manager) || User.IsInRole(AppRoles.Finance))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark fw-semibold" asp-area="" asp-controller="Fines" asp-action="Pending">Onayımı Bekleyenler</a>
+                            </li>
+                        }
+                        @if (User.IsInRole(AppRoles.Admin))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Kullanıcılar</a>
                             </li>
                         }
                     </ul>

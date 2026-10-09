@@ -1,0 +1,54 @@
+@page
+@model TrafficFineManagement.Web.Areas.Identity.Pages.Account.LoginModel
+@using Microsoft.Extensions.Hosting
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment Env
+@{
+    ViewData["Title"] = "Giriş";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-5">
+        <h2 class="mb-4">Giriş Yap</h2>
+
+        <form method="post" asp-route-returnUrl="@Model.ReturnUrl">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+            <div class="mb-3">
+                <label asp-for="Input.Email" class="form-label"></label>
+                <input asp-for="Input.Email" class="form-control" autocomplete="username" />
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Input.Password" class="form-label"></label>
+                <input asp-for="Input.Password" class="form-control" autocomplete="current-password" />
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+
+            <div class="form-check mb-3">
+                <input asp-for="Input.RememberMe" class="form-check-input" />
+                <label asp-for="Input.RememberMe" class="form-check-label"></label>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Giriş</button>
+        </form>
+
+        @if (Env.IsDevelopment())
+        {
+            <div class="card mt-4">
+                <div class="card-header">Demo kullanıcılar (şifre: <code>Test123!</code>)</div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><code>personel@test.com</code> · Personel</li>
+                    <li class="list-group-item"><code>yonetici@test.com</code> · Yönetici</li>
+                    <li class="list-group-item"><code>finans@test.com</code> · Finans</li>
+                    <li class="list-group-item"><code>admin@test.com</code> · Sistem Yöneticisi</li>
+                </ul>
+            </div>
+        }
+    </div>
+</div>
+
+@{
+    ViewData["Title"] = "Giriş";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
