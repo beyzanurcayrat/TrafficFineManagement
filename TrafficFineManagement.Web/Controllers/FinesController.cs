@@ -70,6 +70,7 @@ public class FinesController : Controller
         }
 
         var result = await _fineService.CreateAsync(dto, GetCurrentUser());
+
         if (!result.Success)
         {
             ModelState.AddModelError(string.Empty, result.ErrorMessage!);
