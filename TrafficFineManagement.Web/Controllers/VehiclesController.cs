@@ -9,6 +9,9 @@ namespace TrafficFineManagement.Web.Controllers;
 [Authorize]
 public class VehiclesController : Controller
 {
+    // Araç ekleme / düzenleme / silme yetkisi tek yerde: Personel ve Yönetici
+    private const string VehicleManagers = AppRoles.Personnel + "," + AppRoles.Manager;
+
     private readonly IVehicleService _vehicleService;
 
     public VehiclesController(IVehicleService vehicleService)
@@ -23,14 +26,13 @@ public class VehiclesController : Controller
         return View(vehicles);
     }
 
-    // Ekleme / düzenleme / silme sadece Personel
     [HttpGet]
-    [Authorize(Roles = AppRoles.Personnel + "," + AppRoles.Manager)]
+    [Authorize(Roles = VehicleManagers)]
     public IActionResult Create() => View(new VehicleFormDto());
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    [Authorize(Roles = AppRoles.Personnel)]
+    [Authorize(Roles = VehicleManagers)]
     public async Task<IActionResult> Create(VehicleFormDto dto)
     {
         if (!ModelState.IsValid)
@@ -48,7 +50,7 @@ public class VehiclesController : Controller
     }
 
     [HttpGet]
-    [Authorize(Roles = AppRoles.Personnel)]
+    [Authorize(Roles = VehicleManagers)]
     public async Task<IActionResult> Edit(int id)
     {
         var dto = await _vehicleService.GetForEditAsync(id);
@@ -61,7 +63,7 @@ public class VehiclesController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    [Authorize(Roles = AppRoles.Personnel)]
+    [Authorize(Roles = VehicleManagers)]
     public async Task<IActionResult> Edit(int id, VehicleFormDto dto)
     {
         ViewData["VehicleId"] = id;
@@ -82,7 +84,7 @@ public class VehiclesController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    [Authorize(Roles = AppRoles.Personnel)]
+    [Authorize(Roles = VehicleManagers)]
     public async Task<IActionResult> Delete(int id)
     {
         var result = await _vehicleService.DeleteAsync(id);
