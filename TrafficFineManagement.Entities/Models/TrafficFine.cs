@@ -21,6 +21,9 @@ public class TrafficFine : BaseEntity
     public string CreatedByUserId { get; set; } = string.Empty;
     public AppUser CreatedByUser { get; set; } = null!;
 
+    public string FineForUserId { get; set; } = string.Empty;
+    public AppUser FineForUser { get; set; } = null!;
+
     public byte[] RowVersion { get; set; } = [];
 
     public ICollection<FineApprovalHistory> ApprovalHistories { get; set; } = new List<FineApprovalHistory>();

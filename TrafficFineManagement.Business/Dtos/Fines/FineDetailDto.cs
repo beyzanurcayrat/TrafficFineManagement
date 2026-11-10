@@ -15,6 +15,7 @@ public class FineDetailDto
     public string? Description { get; init; }
     public FineStatus Status { get; init; }
     public string CreatedBy { get; init; } = string.Empty;
+    public string FineFor { get; init; } = string.Empty;
     public DateTime CreatedAt { get; init; }
 
     public List<FineHistoryItemDto> History { get; init; } = [];

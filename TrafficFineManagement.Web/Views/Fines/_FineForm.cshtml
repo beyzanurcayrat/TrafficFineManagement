@@ -1,6 +1,7 @@
 @model FineFormDto
 @{
     var vehicleOptions = ViewData["Vehicles"] as IEnumerable<SelectListItem> ?? Enumerable.Empty<SelectListItem>();
+    var personnelOptions = ViewData["Personnel"] as IEnumerable<SelectListItem> ?? Enumerable.Empty<SelectListItem>();
 }
 
 <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
@@ -12,6 +13,14 @@
             <option value="">Seçiniz...</option>
         </select>
         <span asp-validation-for="VehicleId" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <label asp-for="FineForUserId" class="form-label"></label>
+        <select asp-for="FineForUserId" asp-items="personnelOptions" class="form-select">
+            <option value="">Personel seçiniz...</option>
+        </select>
+        <span asp-validation-for="FineForUserId" class="text-danger"></span>
     </div>
 
     <div class="col-md-6 mb-3">

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using TrafficFineManagement.Business.Common;
 using TrafficFineManagement.Business.Dtos.Fines;
 using TrafficFineManagement.Business.Services;
@@ -16,6 +17,21 @@ public class TrafficFineServiceTests : IDisposable
     private static readonly CurrentUser Personnel = new("u-personel", [AppRoles.Personnel]);
     private static readonly CurrentUser Manager = new("u-yonetici", [AppRoles.Manager]);
     private static readonly CurrentUser Finance = new("u-finans", [AppRoles.Finance]);
+    private static readonly AppUser FineRecipient = new()
+    {
+        Id = "u-personel-alici",
+        UserName = "personel-alici",
+        Email = "personel-alici@test.com",
+        FullName = "Cezanın Yazıldığı Personel"
+    };
+    private static readonly AppUser InactivePersonnel = new()
+    {
+        Id = "u-personel-pasif",
+        UserName = "personel-pasif",
+        Email = "personel-pasif@test.com",
+        FullName = "Pasif Personel",
+        LockoutEnd = DateTimeOffset.MaxValue
+    };
 
     private readonly AppDbContext _context;
     private readonly TrafficFineService _service;
@@ -32,7 +48,14 @@ public class TrafficFineServiceTests : IDisposable
         _context.Users.AddRange(
             new AppUser { Id = Personnel.Id, UserName = "personel", Email = "personel@test.com", FullName = "Test Personel" },
             new AppUser { Id = Manager.Id, UserName = "yonetici", Email = "yonetici@test.com", FullName = "Test Yönetici" },
-            new AppUser { Id = Finance.Id, UserName = "finans", Email = "finans@test.com", FullName = "Test Finans" });
+            new AppUser { Id = Finance.Id, UserName = "finans", Email = "finans@test.com", FullName = "Test Finans" },
+            FineRecipient,
+            InactivePersonnel);
+        _context.Roles.Add(new IdentityRole { Id = "role-personnel", Name = AppRoles.Personnel, NormalizedName = AppRoles.Personnel.ToUpperInvariant() });
+        _context.UserRoles.AddRange(
+            new IdentityUserRole<string> { UserId = Personnel.Id, RoleId = "role-personnel" },
+            new IdentityUserRole<string> { UserId = FineRecipient.Id, RoleId = "role-personnel" },
+            new IdentityUserRole<string> { UserId = InactivePersonnel.Id, RoleId = "role-personnel" });
 
         var vehicle = new Vehicle { Plate = "34ABC123", VehicleType = VehicleType.Car, Brand = "Renault", Model = "Megane" };
         _context.Vehicles.Add(vehicle);
@@ -47,6 +70,7 @@ public class TrafficFineServiceTests : IDisposable
     private FineFormDto ValidForm(string fineNumber = "TC-001") => new()
     {
         VehicleId = _vehicleId,
+        FineForUserId = FineRecipient.Id,
         FineNumber = fineNumber,
         ViolationDate = DateTime.Today.AddDays(-1),
         ViolationType = "Hız sınırı aşımı",
@@ -69,6 +93,12 @@ public class TrafficFineServiceTests : IDisposable
 
         Assert.NotNull(detail);
         Assert.Equal(FineStatus.New, detail.Status);
+        Assert.Equal(FineRecipient.FullName, detail.FineFor);
+        var savedFine = await _context.TrafficFines.SingleAsync();
+        Assert.Equal(Personnel.Id, savedFine.CreatedByUserId);
+        Assert.Equal(FineRecipient.Id, savedFine.FineForUserId);
+        var listItem = Assert.Single(await _service.GetListAsync(null, null));
+        Assert.Equal(FineRecipient.FullName, listItem.FineFor);
         var history = Assert.Single(detail.History);
         Assert.Equal(ApprovalActionType.Created, history.ActionType);
         Assert.Null(history.FromStatus);
@@ -90,6 +120,43 @@ public class TrafficFineServiceTests : IDisposable
         var result = await _service.CreateAsync(ValidForm("tc-001"), Personnel);
 
         Assert.False(result.Success);
+    }
+
+    [Fact]
+    public async Task Create_WhenSelectedUserIsNotPersonnel_Fails()
+    {
+        var form = ValidForm();
+        form.FineForUserId = Manager.Id;
+
+        var result = await _service.CreateAsync(form, Personnel);
+
+        Assert.False(result.Success);
+        Assert.Contains("personel", result.ErrorMessage!, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task Create_WhenSelectedPersonnelIsInactive_Fails()
+    {
+        var form = ValidForm();
+        form.FineForUserId = InactivePersonnel.Id;
+
+        var result = await _service.CreateAsync(form, Personnel);
+
+        Assert.False(result.Success);
+    }
+
+    [Fact]
+    public async Task Update_ChangesFineRecipient()
+    {
+        var id = await CreateFineAsync();
+        var form = ValidForm();
+        form.FineForUserId = Personnel.Id;
+
+        var result = await _service.UpdateAsync(id, form, Personnel);
+
+        Assert.True(result.Success);
+        var detail = await _service.GetDetailAsync(id, Personnel);
+        Assert.Equal("Test Personel", detail!.FineFor);
     }
 
     [Fact]

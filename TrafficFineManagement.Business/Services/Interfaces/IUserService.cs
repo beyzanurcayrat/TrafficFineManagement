@@ -6,6 +6,7 @@ namespace TrafficFineManagement.Business.Services.Interfaces;
 public interface IUserService
 {
     Task<List<UserListItemDto>> GetAllAsync();
+    Task<List<UserOptionDto>> GetActivePersonnelAsync();
     Task<ServiceResult> CreateAsync(UserCreateDto dto);
     Task<ServiceResult> SetActiveAsync(string userId, bool isActive, string currentUserId);
     Task<ServiceResult> DeleteAsync(string userId, string currentUserId);

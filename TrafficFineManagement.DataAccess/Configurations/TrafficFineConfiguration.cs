@@ -36,5 +36,11 @@ public class TrafficFineConfiguration : IEntityTypeConfiguration<TrafficFine>
             .WithMany()
             .HasForeignKey(f => f.CreatedByUserId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Property(f => f.FineForUserId).IsRequired();
+        builder.HasOne(f => f.FineForUser)
+            .WithMany()
+            .HasForeignKey(f => f.FineForUserId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }
