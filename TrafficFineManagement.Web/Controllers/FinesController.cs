@@ -16,11 +16,16 @@ public class FinesController : Controller
 {
     private readonly ITrafficFineService _fineService;
     private readonly IVehicleService _vehicleService;
+    private readonly IUserService _userService;
 
-    public FinesController(ITrafficFineService fineService, IVehicleService vehicleService)
+    public FinesController(
+        ITrafficFineService fineService,
+        IVehicleService vehicleService,
+        IUserService userService)
     {
         _fineService = fineService;
         _vehicleService = vehicleService;
+        _userService = userService;
     }
 
     public async Task<IActionResult> Index(FineStatus? status, string? plate)
@@ -55,6 +60,7 @@ public class FinesController : Controller
     public async Task<IActionResult> Create()
     {
         await LoadVehicleOptionsAsync();
+        await LoadPersonnelOptionsAsync();
         return View(new FineFormDto { ViolationDate = DateTime.Today });
     }
 
@@ -66,6 +72,7 @@ public class FinesController : Controller
         if (!ModelState.IsValid)
         {
             await LoadVehicleOptionsAsync();
+            await LoadPersonnelOptionsAsync();
             return View(dto);
         }
 
@@ -75,6 +82,7 @@ public class FinesController : Controller
         {
             ModelState.AddModelError(string.Empty, result.ErrorMessage!);
             await LoadVehicleOptionsAsync();
+            await LoadPersonnelOptionsAsync();
             return View(dto);
         }
 
@@ -99,6 +107,7 @@ public class FinesController : Controller
         var dto = await _fineService.GetForEditAsync(id);
         ViewData["FineId"] = id;
         await LoadVehicleOptionsAsync();
+        await LoadPersonnelOptionsAsync();
         return View(dto);
     }
 
@@ -112,6 +121,7 @@ public class FinesController : Controller
         if (!ModelState.IsValid)
         {
             await LoadVehicleOptionsAsync();
+            await LoadPersonnelOptionsAsync();
             return View(dto);
         }
 
@@ -120,6 +130,7 @@ public class FinesController : Controller
         {
             ModelState.AddModelError(string.Empty, result.ErrorMessage!);
             await LoadVehicleOptionsAsync();
+            await LoadPersonnelOptionsAsync();
             return View(dto);
         }
 
@@ -172,6 +183,13 @@ public class FinesController : Controller
         ViewData["Vehicles"] = vehicles
             .Select(v => new SelectListItem($"{v.Plate.FormatPlate()} - {v.Brand} {v.Model}", v.Id.ToString()))
             .ToList();
-        
+    }
+
+    private async Task LoadPersonnelOptionsAsync()
+    {
+        var personnel = await _userService.GetActivePersonnelAsync();
+        ViewData["Personnel"] = personnel
+            .Select(user => new SelectListItem(user.FullName, user.Id))
+            .ToList();
     }
 }

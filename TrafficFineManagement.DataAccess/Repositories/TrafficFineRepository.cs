@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TrafficFineManagement.DataAccess.Context;
 using TrafficFineManagement.DataAccess.Repositories.Interfaces;
+using TrafficFineManagement.Entities.Constants;
 using TrafficFineManagement.Entities.Enums;
 using TrafficFineManagement.Entities.Models;
 
@@ -16,6 +17,7 @@ public class TrafficFineRepository : Repository<TrafficFine>, ITrafficFineReposi
     {
         var query = DbSet.AsNoTracking()
             .Include(f => f.Vehicle)
+            .Include(f => f.FineForUser)
             .AsQueryable();
 
         if (status.HasValue)
@@ -31,6 +33,7 @@ public class TrafficFineRepository : Repository<TrafficFine>, ITrafficFineReposi
         DbSet
             .Include(f => f.Vehicle)
             .Include(f => f.CreatedByUser)
+            .Include(f => f.FineForUser)
             .Include(f => f.ApprovalHistories).ThenInclude(h => h.User)
             .FirstOrDefaultAsync(f => f.Id == id);
 
@@ -43,8 +46,21 @@ public class TrafficFineRepository : Repository<TrafficFine>, ITrafficFineReposi
             .Select(g => new { Status = g.Key, Count = g.Count() })
             .ToDictionaryAsync(x => x.Status, x => x.Count);
 
-    // Kullanıcı bir ceza oluşturmuş veya onay geçmişinde yer alıyor mu?
+    // Kullanıcı bir cezanın muhatabı/oluşturanı veya onay geçmişinde yer alıyor mu?
     public async Task<bool> IsUserReferencedAsync(string userId) =>
         await DbSet.AnyAsync(f => f.CreatedByUserId == userId)
+        || await DbSet.AnyAsync(f => f.FineForUserId == userId)
         || await Context.FineApprovalHistories.AnyAsync(h => h.UserId == userId);
+
+    public Task<bool> IsActivePersonnelAsync(string userId)
+    {
+        var now = DateTimeOffset.UtcNow;
+        return (from user in Context.Users
+                join userRole in Context.UserRoles on user.Id equals userRole.UserId
+                join role in Context.Roles on userRole.RoleId equals role.Id
+                where user.Id == userId
+                      && role.Name == AppRoles.Personnel
+                      && (user.LockoutEnd == null || user.LockoutEnd <= now)
+                select user.Id).AnyAsync();
+    }
 }

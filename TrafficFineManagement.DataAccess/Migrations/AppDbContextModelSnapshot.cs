@@ -299,6 +299,10 @@ namespace TrafficFineManagement.DataAccess.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<string>("FineForUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("FineNumber")
                         .IsRequired()
                         .HasMaxLength(30)
@@ -336,6 +340,8 @@ namespace TrafficFineManagement.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("FineForUserId");
 
                     b.HasIndex("FineNumber")
                         .IsUnique();
@@ -467,6 +473,12 @@ namespace TrafficFineManagement.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("TrafficFineManagement.Entities.Identity.AppUser", "FineForUser")
+                        .WithMany()
+                        .HasForeignKey("FineForUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("TrafficFineManagement.Entities.Models.Vehicle", "Vehicle")
                         .WithMany("TrafficFines")
                         .HasForeignKey("VehicleId")
@@ -474,6 +486,8 @@ namespace TrafficFineManagement.DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("CreatedByUser");
+
+                    b.Navigation("FineForUser");
 
                     b.Navigation("Vehicle");
                 });

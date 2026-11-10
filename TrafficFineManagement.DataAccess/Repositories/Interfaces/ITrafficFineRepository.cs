@@ -10,4 +10,5 @@ public interface ITrafficFineRepository : IRepository<TrafficFine>
     Task<bool> FineNumberExistsAsync(string fineNumber, int? excludeId = null);
     Task<Dictionary<FineStatus, int>> GetStatusCountsAsync();
     Task<bool> IsUserReferencedAsync(string userId);
+    Task<bool> IsActivePersonnelAsync(string userId);
 }

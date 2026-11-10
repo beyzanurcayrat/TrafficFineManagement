@@ -34,6 +34,16 @@ public class UserService : IUserService
         return result;
     }
 
+    public async Task<List<UserOptionDto>> GetActivePersonnelAsync()
+    {
+        var users = await _userManager.GetUsersInRoleAsync(AppRoles.Personnel);
+        return users
+            .Where(IsActive)
+            .OrderBy(user => user.FullName)
+            .Select(user => new UserOptionDto(user.Id, user.FullName))
+            .ToList();
+    }
+
     public async Task<ServiceResult> CreateAsync(UserCreateDto dto)
     {
         // Rol dışarıdan gelen metin: sadece tanımlı rollerden biri kabul edilir

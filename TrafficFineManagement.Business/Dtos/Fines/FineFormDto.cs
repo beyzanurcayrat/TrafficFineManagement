@@ -8,6 +8,10 @@ public class FineFormDto
     [Required(ErrorMessage = "Araç seçiniz.")]
     public int? VehicleId { get; set; }
 
+    [Display(Name = "Cezanın Yazıldığı Personel")]
+    [Required(ErrorMessage = "Cezanın yazıldığı personeli seçiniz.")]
+    public string? FineForUserId { get; set; }
+
     [Display(Name = "Tutanak No")]
     [Required(ErrorMessage = "Tutanak numarası zorunludur.")]
     [StringLength(30, ErrorMessage = "Tutanak numarası en fazla 30 karakter olabilir.")]

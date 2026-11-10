@@ -42,7 +42,8 @@ public class TrafficFineService : ITrafficFineService
         var fines = await _fineRepository.GetListAsync(status, normalizedPlate);
 
         return fines
-            .Select(f => new FineListItemDto(f.Id, f.FineNumber, f.Vehicle.Plate, f.ViolationType,
+            .Select(f => new FineListItemDto(f.Id, f.FineNumber, f.Vehicle.Plate, DisplayName(f.FineForUser),
+                f.ViolationType,
                 f.ViolationDate, f.Amount, f.Status))
             .ToList();
     }
@@ -57,6 +58,7 @@ public class TrafficFineService : ITrafficFineService
             Id = fine.Id,
             FineNumber = fine.FineNumber,
             Plate = fine.Vehicle.Plate,
+            FineFor = DisplayName(fine.FineForUser),
             VehicleInfo = $"{fine.Vehicle.Brand} {fine.Vehicle.Model}",
             ViolationType = fine.ViolationType,
             ViolationDate = fine.ViolationDate,
@@ -85,6 +87,7 @@ public class TrafficFineService : ITrafficFineService
         return new FineFormDto
         {
             VehicleId = fine.VehicleId,
+            FineForUserId = fine.FineForUserId,
             FineNumber = fine.FineNumber,
             ViolationDate = fine.ViolationDate,
             ViolationType = fine.ViolationType,
@@ -231,6 +234,10 @@ public class TrafficFineService : ITrafficFineService
         if (await _vehicleRepository.GetByIdAsync(dto.VehicleId!.Value) is null)
             return ServiceResult.Fail("Seçilen araç bulunamadı.");
 
+        if (string.IsNullOrWhiteSpace(dto.FineForUserId)
+            || !await _fineRepository.IsActivePersonnelAsync(dto.FineForUserId))
+            return ServiceResult.Fail("Cezanın yazıldığı personel bulunamadı veya aktif değil.");
+
         var fineNumber = dto.FineNumber.Trim().ToUpperInvariant();
         if (await _fineRepository.FineNumberExistsAsync(fineNumber, excludeId))
             return ServiceResult.Fail($"{fineNumber} numaralı tutanak zaten kayıtlı.");
@@ -244,6 +251,7 @@ public class TrafficFineService : ITrafficFineService
     private static void ApplyForm(TrafficFine fine, FineFormDto dto)
     {
         fine.VehicleId = dto.VehicleId!.Value;
+        fine.FineForUserId = dto.FineForUserId!;
         fine.FineNumber = dto.FineNumber.Trim().ToUpperInvariant();
         fine.ViolationDate = dto.ViolationDate!.Value;
         fine.ViolationType = dto.ViolationType.Trim();

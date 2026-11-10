@@ -2,7 +2,7 @@
 
 Bu projeyi Sarılar Group Junior .NET Developer case çalışması kapsamında geliştirdim. Amaç; araç ve trafik cezası kayıtlarını yönetmek, cezaları belirli bir onay akışından geçirmek ve yapılan işlemleri geriye dönük takip edebilmek.
 
-Bir ceza önce yöneticiye, ardından finans birimine gönderiliyor. Reddedilirse personel gerekli düzeltmeleri yapıp yeniden onaya gönderebiliyor. Oluşturma, güncelleme, onay ve ret işlemleri geçmiş kaydına ekleniyor.
+Ceza kaydı oluşturulurken cezanın yazıldığı aktif personel seçiliyor; kaydı açan kullanıcı işlem geçmişinde ayrıca izleniyor. Bir ceza önce yöneticiye, ardından finans birimine gönderiliyor. Reddedilirse personel gerekli düzeltmeleri yapıp yeniden onaya gönderebiliyor. Oluşturma, güncelleme, onay ve ret işlemleri geçmiş kaydına ekleniyor.
 
 **Teknolojiler:** .NET 9, ASP.NET Core MVC, Entity Framework Core, SQL Server, ASP.NET Core Identity, xUnit ve Docker
 
@@ -139,6 +139,7 @@ Case kapsamında ayrıntısı belirtilmeyen bazı durumlar için şu şekilde il
 - **Reddedilen cezalar:** Kaydı silmek yerine `Reddedildi` durumuna alıyorum ve ret nedenini zorunlu tutuyorum. Personel düzeltme yaptıktan sonra ceza yeniden yönetici onayına gönderiliyor. Finans aşamasında tutar değişmiş olabileceği için kaydın yönetici tarafından tekrar kontrol edilmesini tercih ettim.
 - **Onay sürecindeki kayıtlar:** Onay sürecine giren veya tamamlanan cezalar düzenlenemiyor. Düzenleme yalnızca `Yeni` ve `Reddedildi` durumlarında yapılabiliyor; böylece onaylanan bilgiler sonradan sessizce değiştirilemiyor.
 - **İşlem geçmişi:** Geçmişi ayrı tabloda tutuyorum ve uygulama üzerinden silinmesine izin vermiyorum. Onay ve ret dışında oluşturma ve güncelleme işlemleri de kaydediliyor.
+- **Ceza muhatabı ve kaydı oluşturan:** Ceza formunda cezanın yazıldığı aktif personel seçilir. Kaydı oluşturan oturum kullanıcısı, işlem geçmişinde ayrı olarak korunur.
 - **Roller:** Ceza kaydını oluşturan personel ile onay veren kullanıcıları ayırdım. Araç kayıtlarını yönetici de yönetebiliyor. Admin'in görevi kullanıcı yönetimiyle sınırlı; onay akışına katılmıyor.
 - **Kullanıcılar:** Herkese açık kayıt olma kapalı. Kullanıcıları Admin ekliyor. İşlem geçmişinde kaydı bulunan kullanıcıları silmek yerine pasifleştiriyorum; böylece eski kayıtların kimin tarafından yapıldığı bilgisi korunuyor.
 - **Silme işlemleri:** Cezalar silinmiyor. Üzerinde ceza kaydı bulunan araçların da silinmesine izin verilmiyor.
